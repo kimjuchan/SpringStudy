@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +18,14 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 @Slf4j
 @RequiredArgsConstructor
 public class UserService {
-
-    private final UserRepository userRepository;
+    /**
+     * @Autowired 의존성 주입할경우에도 proxy pattern 기반
+     */
     //외부 class로 내부 메소드 Tx
     private final UserTxService userTxService;
+
+    private final UserRepository userRepository;
+
 
     //getUsers
 
@@ -32,11 +37,50 @@ public class UserService {
 
     //save
 
-    //참조 : https://chikeem90.tistory.com/139
-    //CASE 1) 상위 메소드에 TX 미선언 AND 하위 메소드에 TX 선언되었을 경우.   -> Rollback 처리 불가능. createUser 정상적으로 10개의 유저 정보 등록.
-    //CASE 2) 상위 메소드 TX , 하위 메소드 TX  모두 전파레벨 default = "REQUIRED" 일경우  상위 메소드 TX만 적용. -> RuntimeException (chked Exception) 발생 시 롤백 처리.
-    //CASE 3) 상위 메소드 TX , 하위 메소드 TX(전파 레벨 : REQUIRES_NEW 새 TX 만들경우) 안먹힘...-> 전체 롤백   (물리(논리 TX 1)), (물리(논리 TX 2)) 생성될 줄 알았는데...
-    //-> CASE 3 번 같은 경우에는 예외처리를 상위 메소드에 지정해줘야 예상 되었던 결과 값이 나옴. (하위에서 예외처리만 적용해서 하위만 롤백하는 경우는 불가능한건가 ??)
+    /**
+     * https://huisam.tistory.com/entry/springAOP
+     * @Target : proxy
+     * !Proxy : 실제 Target의 기능을 대신 수행하면서, 기능 확장 추가하는 실제 객체.
+     * !Proxy Pattern : 실제 Target의 기능을 확장 x , Client가 Target에 접근하는 방식.    (둘의 차이가 있음)
+     * 생성 방식 1) JDK Dynamic proxy
+     * interface 기준으로 Reflection을 통해 동적으로 proxy 객체 생성
+     * Reflection으로 인하여 성능 저하만 기억남.
+     * 생성 방식 2) CGLIB
+     * (Enhancer)을 바탕으로 상속 방식으로 class 기준으로 메소드 오버라이딩
+     *
+     * !Runtime Weaving : Runtime시점에 Weaving(Target 객체를 proxied 객체로 적용시키는 과정)이 진행된다.
+     *
+     */
+
+    /**
+     * @Target : Transactional
+     * 참조 : https://chikeem90.tistory.com/139
+     * CASE 1) 상위 메소드에 TX 미선언 AND 하위 메소드에 TX 선언되었을 경우.   -> Rollback 처리 불가능. createUser 정상적으로 10개의 유저 정보 등록.
+     * CASE 2) 상위 메소드 TX , 하위 메소드 TX  모두 전파레벨 default = "REQUIRED" 일경우  상위 메소드 TX만 적용. -> RuntimeException (chked Exception) 발생 시 롤백 처리.
+     * CASE 3) 상위 메소드 TX , 하위 메소드 TX(전파 레벨 : REQUIRES_NEW 새 TX 만들경우) 안먹힘...-> 전체 롤백   (물리(논리 TX 1)), (물리(논리 TX 2)) 생성될 줄 알았는데...
+     * -> CASE 3 번 같은 경우에는 예외처리를 상위 메소드에 지정해줘야 예상 되었던 결과 값이 나옴. (하위에서 예외처리만 적용해서 하위만 롤백하는 경우는 불가능한건가 ??)
+     * 기본적인 우선순위 : 클래스 내부 메소드 > 클래스 > 인터페이스 내부 메소드 > 인터페이스
+     */
+
+    /**
+     * @Target : Transactional Exception
+     * 추가적으로 예외처리 관한 내용 정리.
+     *              Throwable
+     *      | ----------------------|
+     * Exception(checked)     Error(unchecked) *OutOfMemoryError, StackOverflowError
+     *      |
+     *  RuntimeException(unchecked)
+     *  >>예외처리 발생 시점
+     *  checked : 컴파일 시점,  unchecked : 런타임 시점 (NullpointerException , IllegalArgumentException)
+     * @TX 기본적으로 Unchecked Exception에 대해서 default로 예외처리 진행 (추가 설정으로 변경 가능)  @Transactional(rollbackFor = DataFormatException.class) 특정 checked Exception에 대해서 롤백 여부 추가로 작성해주면 가능.
+     * TransactionAspectSupport.class 참조 : https://sup2is.github.io/2021/03/04/java-exceptions-and-spring-transactional.html
+     * --격리 레벨
+     * https://dar0m.tistory.com/225
+     * Read Uncommitted (0) : 트랜잭션 처리 중 or 아직 Commit 되지 않은 데이터에  다른 트랜잭션이 읽는 것 허용.
+     * Read Committed (1) : SELECT 수행 동안 share lock을 통해서 읽는 동안 다른 트랜잭션이 접근 불가. 대부분의 SQL 서버 Default로 사용 레벨
+     * Repeatable Read (2) : 트랜잭션 수행 완료까지 데이터에 Share lock 걸림.
+     * Serializable (3)
+     */
     @Transactional
     public void createUserListWithTrans(){
         log.info("==== UserService.createUserListWithTrans TX Active : {}", TransactionSynchronizationManager.isActualTransactionActive());
