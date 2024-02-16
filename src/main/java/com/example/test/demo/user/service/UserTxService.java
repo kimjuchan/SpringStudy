@@ -25,13 +25,12 @@ public class UserTxService {
         Usersi2 user2 = Usersi2.builder()
                 //F : 홀수 , M : 짝수
                 .memSex((index%2) > 0 ? "F" : "M")
-                //홀수일경우만 결혼
+                //홀수일경우만 결혼g
                 .memMarried((index%2) > 0 ? "Y" : "N")
                 .memPhoneNm("010-1234-123"+index)
                 .memEmail("user"+index+"@naver.com")
                 .build();
         user2Repository.save(user2);
-        throw new RuntimeException(); // user 생성 완료 후 Exception 발생
     }
 
 }

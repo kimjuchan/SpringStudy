@@ -32,10 +32,11 @@ public class UserService {
 
     //save
 
-
+    //참조 : https://chikeem90.tistory.com/139
     //CASE 1) 상위 메소드에 TX 미선언 AND 하위 메소드에 TX 선언되었을 경우.   -> Rollback 처리 불가능. createUser 정상적으로 10개의 유저 정보 등록.
     //CASE 2) 상위 메소드 TX , 하위 메소드 TX  모두 전파레벨 default = "REQUIRED" 일경우  상위 메소드 TX만 적용. -> RuntimeException (chked Exception) 발생 시 롤백 처리.
-    //CASE 3) 상위 메소드 TX , 하위 메소드 TX(전파 레벨 : REQUIRES_NEW 새 TX 만들경우)
+    //CASE 3) 상위 메소드 TX , 하위 메소드 TX(전파 레벨 : REQUIRES_NEW 새 TX 만들경우) 안먹힘...-> 전체 롤백   (물리(논리 TX 1)), (물리(논리 TX 2)) 생성될 줄 알았는데...
+    //-> CASE 3 번 같은 경우에는 예외처리를 상위 메소드에 지정해줘야 예상 되었던 결과 값이 나옴. (하위에서 예외처리만 적용해서 하위만 롤백하는 경우는 불가능한건가 ??)
     @Transactional
     public void createUserListWithTrans(){
         log.info("==== UserService.createUserListWithTrans TX Active : {}", TransactionSynchronizationManager.isActualTransactionActive());
@@ -43,7 +44,7 @@ public class UserService {
             createUser1(index);
             userTxService.createUser2(index);
         }
-        //throw new RuntimeException(); // user 생성 완료 후 Exception 발생
+        throw new RuntimeException(); // user 생성 완료 후 Exception 발생
     }
 
     //@Transactional
