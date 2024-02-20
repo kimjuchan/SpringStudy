@@ -14,15 +14,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.web.ErrorResponse;
-
-import javax.sql.DataSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
@@ -41,12 +38,13 @@ public class SecurityConfig {
     private final UserDetailServiceImpl userDetailService;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         //임시로 모든 권한 열어둠
         http
                 .authorizeHttpRequests(
                         auth ->
                                 auth
-                                        .anyRequest().permitAll()
+                                        .anyRequest().authenticated()
                 )
                 .httpBasic(HttpBasicConfigurer::disable)
                 .cors(withDefaults())
@@ -56,8 +54,20 @@ public class SecurityConfig {
                 .logout(withDefaults())
                 .exceptionHandling((exceptionConfig) ->
                         exceptionConfig.authenticationEntryPoint(unauthorizedEntryPoint).accessDeniedHandler(accessDeniedHandler)
-                ); // 401 403 관련 예외처리
-
+                                  ) // 401 403 관련 예외처리
+                //UsernamePasswordAuthenticationFilter 보다 먼저 실행됨.
+                //UsernamePasswordAuthenticationFilter.class를 통해서 userNm,pwd 인증처리 전에 custom환경에서 JWT 토큰 검증 필터 추가방식.
+                /**
+                 * 인증 과정
+                 * 클라이언트로부터 인증 요청이 들어옵니다.
+                 * UsernamePasswordAuthenticationFilter가 요청을 가로채어 사용자가 입력한 인증 정보를 확인합니다.
+                 * AuthenticationManager를 통해 사용자 인증을 수행합니다.
+                 * 인증이 성공하면 Authentication 객체가 생성됩니다.
+                 * Authentication 객체는 SecurityContext저장 후 이친구는 또 SecurityContextHolder에 저장되어 현재 인증된 사용자 정보를 관리합니다.
+                 * 요청은 다음 필터로 계속 전달됩니다.
+                 */
+                //.addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        ;
         return http.build();
     }
 

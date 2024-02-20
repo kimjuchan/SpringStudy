@@ -36,7 +36,7 @@ public class Members extends BaseEntity {
 
     //권한 List
     public List<String> getRoleList() {
-        if (this.roles.length() > 0) {
+        if (!this.roles.isEmpty()) {
             return Arrays.asList(this.roles.split(","));
         }
         return new ArrayList<>();

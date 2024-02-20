@@ -22,7 +22,6 @@ public class MembersController {
     @PostMapping("/sign")
     public void membersCreate(@Valid MemberCreateRequest memberCreateRequest){
         //MemberCreateRequest 객체 유효성 체크
-
         int createResult = membersService.membersCreate(memberCreateRequest);
 
 
