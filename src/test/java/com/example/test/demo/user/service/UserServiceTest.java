@@ -22,6 +22,10 @@ class UserServiceTest {
     @Autowired
     private UserRepository userRepository;
 
+
+    /**
+     * @TEST용으로 만들긴 했지만 아직 사용법이 미숙함.
+     */
     @Test
     void getTxServiceTest(){
         System.out.println("----------TX TEST START-----------");
