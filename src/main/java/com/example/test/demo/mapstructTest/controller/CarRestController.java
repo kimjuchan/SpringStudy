@@ -1,12 +1,9 @@
-package com.example.test.demo.car.controller;
+package com.example.test.demo.mapstructTest.controller;
 
 
-import com.example.test.demo.car.service.CarServiceImp;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import com.example.test.demo.mapstructTest.service.CarServiceImp;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

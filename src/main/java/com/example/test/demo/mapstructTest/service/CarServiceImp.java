@@ -1,7 +1,7 @@
-package com.example.test.demo.car.service;
+package com.example.test.demo.mapstructTest.service;
 
 
-import com.example.test.demo.car.domain.Car;
+import com.example.test.demo.mapstructTest.domain.Car;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

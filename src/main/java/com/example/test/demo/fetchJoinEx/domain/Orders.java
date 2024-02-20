@@ -23,8 +23,8 @@ public class Orders {
     private String itemNm;
 
     //Member정보 지연로딩 설정.
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="memId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="mem_id")
     private Member member;
 
 

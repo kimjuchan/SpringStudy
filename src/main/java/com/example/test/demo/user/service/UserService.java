@@ -38,21 +38,6 @@ public class UserService {
     //save
 
     /**
-     * https://huisam.tistory.com/entry/springAOP
-     * @Target : proxy
-     * !Proxy : 실제 Target의 기능을 대신 수행하면서, 기능 확장 추가하는 실제 객체.
-     * !Proxy Pattern : 실제 Target의 기능을 확장 x , Client가 Target에 접근하는 방식.    (둘의 차이가 있음)
-     * 생성 방식 1) JDK Dynamic proxy
-     * interface 기준으로 Reflection을 통해 동적으로 proxy 객체 생성
-     * Reflection으로 인하여 성능 저하만 기억남.
-     * 생성 방식 2) CGLIB
-     * (Enhancer)을 바탕으로 상속 방식으로 class 기준으로 메소드 오버라이딩
-     *
-     * !Runtime Weaving : Runtime시점에 Weaving(Target 객체를 proxied 객체로 적용시키는 과정)이 진행된다.
-     *
-     */
-
-    /**
      * @Target : Transactional
      * 참조 : https://chikeem90.tistory.com/139
      * CASE 1) 상위 메소드에 TX 미선언 AND 하위 메소드에 TX 선언되었을 경우.   -> Rollback 처리 불가능. createUser 정상적으로 10개의 유저 정보 등록.
@@ -83,17 +68,18 @@ public class UserService {
      */
     @Transactional
     public void createUserListWithTrans(){
-        log.info("==== UserService.createUserListWithTrans TX Active : {}", TransactionSynchronizationManager.isActualTransactionActive());
+        System.out.println("==== UserService.createUserListWithTrans TX Active : " + TransactionSynchronizationManager.isActualTransactionActive());
+        //log.info("==== UserService.createUserListWithTrans TX Active : {}", TransactionSynchronizationManager.isActualTransactionActive());
         for (int index = 0; index < 10; index++) {
             createUser1(index);
             userTxService.createUser2(index);
         }
-        throw new RuntimeException(); // user 생성 완료 후 Exception 발생
     }
 
-    //@Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createUser1(int index){
-        log.info("==== innerMethod transaction Active : {}", TransactionSynchronizationManager.isActualTransactionActive());
+        System.out.println("==== innerMethod transaction Active : " + TransactionSynchronizationManager.isActualTransactionActive());
+        //log.info("==== innerMethod transaction Active : {}", TransactionSynchronizationManager.isActualTransactionActive());
         Usersi user = Usersi.builder()
                 //F : 홀수 , M : 짝수
                 .memSex((index%2) > 0 ? "F" : "M")

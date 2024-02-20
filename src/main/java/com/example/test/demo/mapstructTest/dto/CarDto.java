@@ -1,4 +1,4 @@
-package com.example.test.demo.car.dto;
+package com.example.test.demo.mapstructTest.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

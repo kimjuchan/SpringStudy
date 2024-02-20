@@ -1,4 +1,4 @@
-package com.example.test.demo.car.domain;
+package com.example.test.demo.mapstructTest.domain;
 
 
 import com.example.test.demo.BaseEntity;

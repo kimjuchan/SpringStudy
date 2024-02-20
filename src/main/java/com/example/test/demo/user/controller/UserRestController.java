@@ -6,13 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.ref.PhantomReference;
-
 @RestController
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class UserRestController {
 
-    private final UserService userService;
+    public UserRestController(UserService userService) {
+        this.userService = userService;
+    }
+
+    private UserService userService;
     //user 전체 목록 조회.
     //param 값 없는 기준으로 전체 조회 테스트 진행.
     @GetMapping("/users")

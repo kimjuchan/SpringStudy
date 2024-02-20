@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -22,9 +24,9 @@ public class Member extends BaseEntity {
 
     private String userNm;
 
-    @ManyToOne
-    @JoinColumn(name = "orderId")
-    private Orders orders;
+    @OneToMany
+    @JoinColumn(name = "order_id")
+    private List<Orders> orders;
 
 
 
