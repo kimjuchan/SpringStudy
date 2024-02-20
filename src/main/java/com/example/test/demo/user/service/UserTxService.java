@@ -1,5 +1,6 @@
 package com.example.test.demo.user.service;
 
+import com.example.test.demo.user.domain.Usersi;
 import com.example.test.demo.user.domain.Usersi2;
 import com.example.test.demo.user.repository.User2Repository;
 import com.example.test.demo.user.repository.UserRepository;
@@ -31,6 +32,22 @@ public class UserTxService {
                 .memEmail("user"+index+"@naver.com")
                 .build();
         user2Repository.save(user2);
+    }
+
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void createUser1(int index){
+        System.out.println("==== innerMethod transaction Active : " + TransactionSynchronizationManager.isActualTransactionActive());
+        //log.info("==== innerMethod transaction Active : {}", TransactionSynchronizationManager.isActualTransactionActive());
+        Usersi user = Usersi.builder()
+                //F : 홀수 , M : 짝수
+                .memSex((index%2) > 0 ? "F" : "M")
+                //홀수일경우만 결혼
+                .memMarried((index%2) > 0 ? "Y" : "N")
+                .memPhoneNm("010-1234-123"+index)
+                .memEmail("user"+index+"@naver.com")
+                .build();
+        userRepository.save(user);
     }
 
 }

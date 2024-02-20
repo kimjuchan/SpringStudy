@@ -18,6 +18,14 @@ public class ProxyServiceImpl implements proxyService{
      * Spring 4.3 & spring boot 1.4부터 default로 CGLIB을 사용하게 되었다.
      * -> 만약 JDK 동적 프록시를 사용하려면 YML파일에   proxy-target-class : false 처리해주면 가능.
      * @Reflection API
+     *
+     *
+     * 동작 원리
+     * Client 요청 > AOP 프로시가 인터셉터 체인을 통해 가로챔 Transaction Advisor에게 전달
+     * Transaction Advisor 트잭 생성
+     * Custom Advisor가 있다면 실행 후 비지니스 로직 호출
+     * Transaction Advisor COMMIT OR ROLLBACK등의 트잭 결과 반환.
+     * https://coding-business.tistory.com/83
      */
 
 

@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
  * @EnableAspectJAutoProxy default = false -> CGLIB 방식으로 PROXY 구현 , true -> JDK Dynamic 방식으로 구현.  ->
  * 자동으로 spring boot내에서 런타임 시점에 AOP에 대한 프록시 객체 생성 후 빈으로 등록하여, 선언 따로 해줄 필요 없음.
  * Controller 단계 전후에 @Custom Annotaion or Pakage 경로작성하여, 사용.
- *
+ * 참조  :https://congsong.tistory.com/25
+ * (상세 사용법에 대해서 자세히 나옴)
  */
 @Aspect
 @Component
@@ -25,9 +26,11 @@ public class LogginAspectTest {
      * @param joinPoint
      */
     //@Before("execution(* com.example.test.demo.user.controller*.*(..))")
-    @Before("within(* com.example.test.demo.user.controller*.*(..))")
+    //@Before("within(* com.example.test.demo.user.controller*.*(..))")
+    @Before("@annotation(com.example.test.demo.aopProxy.annotation.LoggingAnnotations)")
     public void logBefore(JoinPoint joinPoint) {
         log.info("Before: " + joinPoint.getSignature().getName());
+        log.info("AOP START Before UserService----- : ");
     }
 
     /**
@@ -35,7 +38,8 @@ public class LogginAspectTest {
      *
      * @param joinPoint
      */
-    @After("execution(* com.example.test.demo.user.controller.*.*(..))")
+    //@After("execution(* com.example.test.demo.user.controller.*.*(..))")
+    @After("@annotation(com.example.test.demo.aopProxy.annotation.LoggingAnnotations)")
     public void logAfter(JoinPoint joinPoint) {
         log.info("After: " + joinPoint.getSignature().getName());
     }
@@ -46,7 +50,8 @@ public class LogginAspectTest {
      * @param joinPoint
      * @param result
      */
-    @AfterReturning(pointcut = "execution(* com.example.test.demo.user.controller.*.*(..))", returning = "result")
+    //@AfterReturning(pointcut = "execution(* com.example.test.demo.user.controller.*.*(..))", returning = "result")
+    @AfterReturning(pointcut = "@annotation(com.example.test.demo.aopProxy.annotation.LoggingAnnotations)", returning = "result")
     public void logAfterReturning(JoinPoint joinPoint, Object result) {
         log.info("AfterReturning: " + joinPoint.getSignature().getName() + " result: " + result);
     }
@@ -57,7 +62,8 @@ public class LogginAspectTest {
      * @param joinPoint
      * @param e
      */
-    @AfterThrowing(pointcut = "execution(* com.example.test.demo.user.controller.*.*(..))", throwing = "e")
+    //@AfterThrowing(pointcut = "execution(* com.example.test.demo.user.controller.*.*(..))", throwing = "e")
+    @AfterThrowing(pointcut = "@annotation(com.example.test.demo.aopProxy.annotation.LoggingAnnotations)", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
         log.info("AfterThrowing: " + joinPoint.getSignature().getName() + " exception: " + e.getMessage());
     }
@@ -69,7 +75,8 @@ public class LogginAspectTest {
      * @return
      * @throws Throwable
      */
-    @Around("execution(* com.example.test.demo.user.controller.*.*(..))")
+    //@Around("execution(* com.example.test.demo.user.controller.*.*(..))")
+    @Around("@annotation(com.example.test.demo.aopProxy.annotation.LoggingAnnotations)")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
 
         log.info("Around before: " + joinPoint.getSignature().getName());
