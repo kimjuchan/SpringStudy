@@ -4,6 +4,7 @@ package com.example.test.demo.security.controller;
 import com.example.test.demo.security.dto.MemberCreateRequest;
 import com.example.test.demo.security.service.MembersService;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,10 @@ public class MembersController {
         //MemberCreateRequest 객체 유효성 체크
         int createResult = membersService.membersCreate(memberCreateRequest);
 
+    }
+
+    @GetMapping("/auth/chk")
+    public void memberAuthChk(){
 
     }
 

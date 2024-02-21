@@ -23,6 +23,8 @@ public class Members extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String loginId;
 
     @Column(nullable = false)
     private String userName;

@@ -34,11 +34,14 @@ dependencies {
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 	// Map Struct 설정 시 Lombok 관련하여 제대로 작동되지 않을 경우 dependency 추가.
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+	//JWT
+	//implementation "io.jsonwebtoken:jjwt:0.9.1"
+	implementation 'com.auth0:java-jwt:4.0.0'
 
-
+	//Validation Check
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-
+	//TDD
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 }

@@ -16,6 +16,7 @@ public class MembersServiceImpl implements MembersService{
 
     private final MembersRepository membersRepository;
     private final PasswordEncoder passwordEncoder;
+
     //Members Create
     public int membersCreate(MemberCreateRequest memberCreateRequest){
 
