@@ -3,6 +3,7 @@ package com.example.test.demo.user.service;
 
 
 import com.example.test.demo.aopProxy.annotation.LoggingAnnotations;
+import com.example.test.demo.department.Department;
 import com.example.test.demo.user.domain.Usersi;
 import com.example.test.demo.user.domain.Usersi2;
 import com.example.test.demo.user.repository.User2Repository;
@@ -16,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import java.util.List;
+import java.util.Random;
 
 @Service
 @Slf4j
@@ -77,7 +81,44 @@ public class UserService {
      * Repeatable Read (2) : 트랜잭션 수행 완료까지 데이터에 Share lock 걸림.
      * Serializable (3)
      */
+     public void relation_test(){
 
+
+         Department departmentA = Department.builder().deptName("depa").content("a").build();
+         Department departmentB = Department.builder().deptName("depB").content("B").build();
+         Department departmentC = Department.builder().deptName("depc").content("c").build();
+         Department departmentD = Department.builder().deptName("depd").content("d").build();
+
+         String deptsList = "ABCD";
+         Random random = new Random();
+
+
+         for(int i=0; i<50; i++){
+             int randomValue = (int) (Math.random() * 4) + 1;
+             Usersi usersi =
+                     Usersi.builder()
+                             .memSex((i%2) > 0 ? "F" : "M")
+                             //홀수일경우만 결혼g
+                             .memMarried((i%2) > 0 ? "Y" : "N")
+                             .memPhoneNm("010-1234-123"+i)
+                             .memEmail("user"+i+"@naver.com")
+                             .build();
+             userRepository.save(usersi);
+             System.out.println("randomValue :: "  +randomValue );
+            switch (randomValue){
+                case 1 : usersi.setDepartment(departmentA); break;
+                case 2 : usersi.setDepartment(departmentB); break;
+                case 3 : usersi.setDepartment(departmentC); break;
+                case 4 : usersi.setDepartment(departmentD); break;
+            }
+
+         }
+         List<Usersi> usersiList = userRepository.findAll();
+         usersiList.forEach(user -> {
+             System.out.println("user Dept :: "+ user.getDepartment() + "user email :: " + user.getMemEmail() + "user id :: " + user.getId());
+         });
+
+     }
     public void createUser2(int index){
         log.info("==== UserTxService.createUser2 TX Active : {}", TransactionSynchronizationManager.isActualTransactionActive());
         Usersi2 user2 = Usersi2.builder()

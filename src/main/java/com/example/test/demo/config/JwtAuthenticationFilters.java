@@ -32,11 +32,6 @@ public class JwtAuthenticationFilters extends UsernamePasswordAuthenticationFilt
 
     private final JwtUtil jwtUtil;
 
-    public JwtAuthenticationFilters(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
-    }
-
     //@SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)

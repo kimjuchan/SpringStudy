@@ -2,8 +2,12 @@ package com.example.test.demo.user.domain;
 
 
 import com.example.test.demo.BaseEntity;
+
+import com.example.test.demo.department.Department;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -30,4 +34,8 @@ public class Usersi extends BaseEntity {
 
     @Column
     private String memEmail;
+
+    @ManyToOne
+    @JoinColumn(name = "dept_id")
+    private Department department;
 }

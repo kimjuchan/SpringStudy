@@ -15,6 +15,11 @@ public class UserRestController {
     }
 
     private UserService userService;
+
+    @GetMapping("/jpa")
+    public void test(){
+        userService.relation_test();
+    }
     //user 전체 목록 조회.
     //param 값 없는 기준으로 전체 조회 테스트 진행.
     @GetMapping("/users")
